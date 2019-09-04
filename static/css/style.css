@@ -1,0 +1,32 @@
+body{
+  background-color: #2f3542;
+}
+h1{
+  font-size: 60px;
+}
+h1, h2, h3, p{
+  font-family: 'Patua One', cursive;
+}
+
+.home_link:link{
+  text-decoration: none;
+  color: black;
+}
+.home_link:visited{
+  text-decoration: none;
+}
+
+.post_link:link{
+  text-decoration: none;
+  color: black;
+}
+.post_link:visited{
+  text-decoration: none;
+}
+
+.jumbotron{
+  background-color: #dfe4ea;
+}
+.footer{
+  background-color: white;
+}
