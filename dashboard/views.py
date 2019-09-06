@@ -1,5 +1,6 @@
 from django.views.generic.list import ListView
 from django.views.generic import FormView, RedirectView
+from django.views.generic.detail import DetailView
 
 from django.utils.http import is_safe_url
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
@@ -11,7 +12,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import redirect
 
 
-from blog.models import BlogUser, Post
+from blog.models import *
 
 
 class LoginView(FormView):
@@ -65,4 +66,38 @@ class DashboardView(ListView):
         context["title"] = "Dashboard"
         user = BlogUser.objects.get(user=self.request.user)
         context["posts"] = Post.objects.filter(author=user)
+        return context
+
+
+class CategoryListView(ListView):
+    template_name = 'dashboard/category_list.html'
+    model = Category
+    context_object_name = "categories"
+
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Categorias"
+        #context["categories"] = self.model.objects.all()
+        return context
+
+
+class PostDetailView(DetailView):
+    model = Post
+    template_name = "dashboard/post_detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = kwargs['object'].title
+        return context
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = "dashboard/category_detail.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = kwargs['object'].name
+        context["posts"] = Post.objects.filter(category=kwargs['object'])
         return context

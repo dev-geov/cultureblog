@@ -1,4 +1,4 @@
-{% extends "blog/layouts/base.html" %}
+{% extends "dashboard/layouts/base.html" %}
 {% load static %}
 {% block content %}
 <div class="card">
@@ -12,7 +12,12 @@
     </p>
   </div>
   <div class="card-footer">
-
+    <p>
+      Categorias:
+      {% for c in post.category.all %}
+        <a href="{% url 'dashboard:category-detail' c.name %}">{{ c.name }}</a>
+      {% endfor %}
+    </p>
   </div>
   <div class="card-footer">
 

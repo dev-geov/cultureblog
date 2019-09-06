@@ -14,6 +14,7 @@ class AboutView(TemplateView):
         return context
 
 
+
 class PostListView(ListView):
     #template_name = 'blog/post_list.html'
     model = Post
@@ -21,8 +22,13 @@ class PostListView(ListView):
 
     def get_queryset(self):
         search = self.request.GET.get('search', None)
+        c = self.request.GET.get('category', None)
+
         if search is not None:
             object_list = self.model.objects.filter(publish=True, slug__icontains=search)
+        elif c is not None:
+            category = Category.objects.get(slug=c)
+            object_list = self.model.objects.filter(publish=True, category=category)
         else:
             object_list = self.model.objects.filter(publish=True)
         return object_list

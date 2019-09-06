@@ -5,6 +5,12 @@
   <div class="card-header">
     <h3>{{ post.title }}</h3>
     <p>{{ post.created }}</p>
+    <p>
+      Categorias:
+      {% for c in post.category.all %}
+        <a href="{% url 'blog:posts-index' %}?category={{ c.slug }}">{{ c.name }}</a>
+      {% endfor %}
+    </p>
   </div>
   <div class="card-body">
     <p>
