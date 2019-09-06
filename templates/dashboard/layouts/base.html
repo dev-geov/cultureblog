@@ -1,0 +1,47 @@
+{% load staticfiles %}
+
+<!doctype html>
+<html>
+<head>
+  <meta charset=utf-8>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <title>{{ title }} - Cultura dos bits</title>
+  <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link href="https://fonts.googleapis.com/css?family=Patua+One&display=swap" rel="stylesheet">
+</head>
+<body>
+
+{% include 'blog/layouts/header.html' %}
+
+<div class="container">
+  <div class="row">
+    {% if request.user.is_authenticated %}
+      <div class="col-sm-3">
+        <div class="card sidebar">
+          <div class="card-body">
+            {% include "dashboard/layouts/sidebar.html" %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% if request.user.is_authenticated %}
+      <div class="col-sm-9">
+    {% else %}
+      <div class="col-sm-12">
+    {% endif %}
+      {% block content %}
+
+      {% endblock %}
+    </div>
+
+  </div>
+</div>
+
+<br>
+
+{% include 'blog/layouts/footer.html' %}
+<script  src="{% static 'js/jquery.js' %}"></script>
+<script  src="{% static 'bootstrap/js/bootstrap.js' %}"></script>
+</body>
+</html>

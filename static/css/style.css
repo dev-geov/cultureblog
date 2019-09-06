@@ -18,7 +18,6 @@ h1, h2, h3, p{
 
 .post_link:link{
   text-decoration: none;
-  color: black;
 }
 .post_link:visited{
   text-decoration: none;
@@ -29,4 +28,12 @@ h1, h2, h3, p{
 }
 .footer{
   background-color: white;
+  margin-bottom: 1%;
+  border-radius: 5px;
+}
+.sidebar{
+  height: 100%;
+}
+.content{
+  height: 100%;
 }
