@@ -13,7 +13,7 @@
               <a class="nav-link" href="{% url 'blog:posts-index' %}">Inicio<span class="sr-only">(página atual)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'blog:about' %}">Sobre</a>
+              <a class="nav-link" href="{% url 'about' %}">Sobre</a>
             </li>
             <!--
             <li class="nav-item dropdown">
@@ -29,7 +29,7 @@
             </li>
             -->
             <li class="nav-item">
-              <a class="nav-link" href="#">Contato</a>
+              <a class="nav-link" href="{% url 'contact' %}">Contato</a>
             </li>
           </ul>
           <form class="form-inline my-2 my-lg-0" method="get" action="{% url 'blog:posts-index' %}">

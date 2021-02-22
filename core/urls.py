@@ -13,14 +13,22 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+from django.views.generic.base import RedirectView
+from django.views.generic import TemplateView
 from django.contrib import admin
+
 from django.urls import path, include
 from blog import urls as blog_urls
+from dashboard.views import ContactView
 from dashboard import urls as dashboard_urls
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='posts/')),
     path('admin/', admin.site.urls),
-    path('', include(blog_urls, namespace='blog')),
+    path('posts/', include(blog_urls, namespace='blog')),
     path('oauth/', include('social_django.urls', namespace='social')),
-    path('dashboard/', include(dashboard_urls, namespace='dashboard'))
+    path('dashboard/', include(dashboard_urls, namespace='dashboard')),
+    path('about/', TemplateView.as_view(template_name="blog/about.html"), name='about'),
+    path('contact', ContactView.as_view(), name='contact'),
 ]

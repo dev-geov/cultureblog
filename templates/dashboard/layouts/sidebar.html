@@ -1,29 +1,43 @@
 <aside class="col-12 p-0 bg-dark">
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark align-items-start flex-sm-column flex-row">
-        <a class="navbar-brand" href="#"><i class="fa fa-bullseye fa-fw"></i> Menu</a>
         <a href class="navbar-toggler" data-toggle="collapse" data-target=".sidebar">
            <span class="navbar-toggler-icon"></span>
         </a>
         <div class="collapse navbar-collapse sidebar">
             <ul class="flex-column navbar-nav w-100 justify-content-between">
                 <li class="nav-item">
-                    <a class="nav-link pl-0" href="{% url 'dashboard:categories' %}"><i class="fa fa-heart-o fa-fw"></i> <span class="">Categorias</span></a>
+                    <a class="nav-link pl-0" href="{% url 'dashboard:index' %}" aria-expanded="false">
+                        <i class="fa fa-home"></i> <span class="">Home</span>
+                    </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link pl-0 dropdown-toggle text-nowrap" href="#m1" data-parent="#navbar1" data-toggle="collapse" data-target="#m1" aria-expanded="false">
-                        <i class="fa fa-address-card-o fa-fw"></i> <span class=""> Posts</span>
+                        <i class="fa fa-archive"></i> <span class="">Posts</span>
                     </a>
                     <div class="collapse" id="m1">
                         <ul class="flex-column nav">
-                            <a class="nav-link px-0 text-truncate" href="#">Arquivados</a>
-                            <a class="nav-link px-0 text-truncate" href="#">Ativos</a>
-                            <a class="nav-link px-0 text-truncate" href="#">Novo</a>
+                            <a class="nav-link px-0 text-truncate" href="{% url 'dashboard:index' %}?filter=unpublished">Arquivados</a>
+                            <a class="nav-link px-0 text-truncate" href="{% url 'dashboard:index' %}?filter=published">Ativos</a>
+                            <a class="nav-link px-0 text-truncate" href="{% url 'dashboard:post-new' %}">Novo</a>
                         </ul>
                     </div>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link pl-0" href="{% url 'dashboard:logout' %}"><i class="fa fa-heart fa-fw"></i> <span class="">Sair</span></a>
+                    <a class="nav-link pl-0 dropdown-toggle text-nowrap" href="#m2" data-parent="#navbar1" data-toggle="collapse" data-target="#m2" aria-expanded="false">
+                        <i class="fa fa-bookmark"></i> <span class=""> Categorias</span>
+                    </a>
+                    <div class="collapse" id="m2">
+                        <ul class="flex-column nav">
+                            {% for category in categories %}
+                                <a class="nav-link px-0 text-truncate" href="{% url 'dashboard:category-detail' category.slug %}">{{ category.name }}</a>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link pl-0" href="{% url 'dashboard:logout' %}"><i class="fa fa-times"></i> Sair</a>
                 </li>
             </ul>
         </div>

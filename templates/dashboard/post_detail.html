@@ -15,12 +15,15 @@
     <p>
       Categorias:
       {% for c in post.category.all %}
-        <a href="{% url 'dashboard:category-detail' c.name %}">{{ c.name }}</a>
+        <a href="{% url 'dashboard:category-detail' c.slug %}">{{ c.name }}</a>
       {% endfor %}
     </p>
   </div>
   <div class="card-footer">
-
+    <a href="{% url 'dashboard:post-edit' post.slug %}">
+      <button class="btn btn-primary">Editar</button>
+    </a>
+    <button class="btn btn-danger">Deletar</button>
   </div>
 </div>
 {% endblock %}

@@ -1,17 +1,11 @@
 from django.shortcuts import render
 from django.views.generic import ListView, TemplateView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 from django.db.models import Q
 from .models import *
-
-
-class AboutView(TemplateView):
-    template_name = "blog/about.html"
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Sobre"
-        return context
+from .forms import CommentForm
+from django.shortcuts import redirect
 
 
 
@@ -48,4 +42,22 @@ class PostDetailView(DetailView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = kwargs['object'].title
+        context["comment_form"] = CommentForm()
+        context["comments"] = Comment.objects.filter(post=kwargs['object'])
         return context
+
+
+class CreateCommentView(CreateView):
+    model = Comment
+    fields = ['email', 'content']
+    success_url = None
+
+    def post(self, request, *args, **kwargs):
+        form = CommentForm(request.POST)
+
+        if form.is_valid():
+            post = Post.objects.get(slug=kwargs.get('slug'))
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect('blog:post-detail', post.slug)

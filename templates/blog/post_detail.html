@@ -1,4 +1,5 @@
 {% extends "blog/layouts/base.html" %}
+{% load bootstrap %}
 {% load static %}
 {% block content %}
 <div class="card">
@@ -18,10 +19,22 @@
     </p>
   </div>
   <div class="card-footer">
-
+    <h5>Adicionar comentário</h5>
+    <form method="POST" action="{% url 'blog:comment-create' post.slug %}">
+      {% csrf_token %}
+      {{ comment_form|bootstrap }}
+      <input type="submit" value="Comentar" class="btn btn-primary" />
+    </form>
   </div>
   <div class="card-footer">
-
+    <h5>Comentários</h5>
+    <hr>
+    {% for comment in comments %}
+      <p>
+        {{ comment.email}} diz: {{ comment.content }}
+      </p>
+      <hr>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}

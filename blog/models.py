@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
+from .constants import CHARS
 
 
 class BlogUser(models.Model):
@@ -20,8 +21,8 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         value = self.name
         for letter in value:
-            if letter in 'àáéíóúç':
-                value = value.replace(letter,'')
+            if letter in 'õãàáéíóúç':
+                value = value.replace(letter, CHARS.get(letter))
         self.slug = slugify(value, allow_unicode=True)
         super().save(*args, **kwargs)
 
@@ -45,12 +46,12 @@ class Post(models.Model):
     def save(self, *args, **kwargs):
         value = self.title
         for letter in value:
-            if letter in 'àáéíóúç':
-                value = value.replace(letter,'')
+            if letter in 'ãõàáéíóúç':
+                value = value.replace(letter, CHARS.get(letter))
         self.slug = slugify(value, allow_unicode=True)
         super().save(*args, **kwargs)
 
 class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
     email = models.EmailField(verbose_name="Email")
-    author = models.ForeignKey(BlogUser, on_delete=models.CASCADE, verbose_name="Autor")
     content = models.TextField(verbose_name="Texto")

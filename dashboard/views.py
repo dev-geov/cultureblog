@@ -1,6 +1,7 @@
 from django.views.generic.list import ListView
 from django.views.generic import FormView, RedirectView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, FormView, UpdateView
 
 from django.utils.http import is_safe_url
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
@@ -13,6 +14,23 @@ from django.shortcuts import redirect
 
 
 from blog.models import *
+from .forms import PostForm, ContactForm
+
+
+class ContactView(FormView):
+    template_name = "blog/contact.html"
+    form_class = ContactForm
+    success_url = 'contact'
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = "Contatos"
+        context["form"] = ContactForm()
+        return context
+    
+    def form_valid(self, form):
+        form.send_email()
+        return super().form_valid(form)
 
 
 class LoginView(FormView):
@@ -64,40 +82,104 @@ class DashboardView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = "Dashboard"
-        user = BlogUser.objects.get(user=self.request.user)
-        context["posts"] = Post.objects.filter(author=user)
-        return context
-
-
-class CategoryListView(ListView):
-    template_name = 'dashboard/category_list.html'
-    model = Category
-    context_object_name = "categories"
-
-
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = "Categorias"
-        #context["categories"] = self.model.objects.all()
+        context["categories"] = Category.objects.all()
+        if self.request.GET.get('filter'):
+            filter = self.request.GET.get('filter')
+            if filter == 'published':
+                context["posts"] = Post.objects.filter(
+                    author__user=self.request.user,
+                    publish=True,
+                )
+            elif filter == 'unpublished':
+                context["posts"] = Post.objects.filter(
+                    author__user=self.request.user,
+                    publish=False,
+                )
+        else:
+            context["posts"] = Post.objects.filter(
+                author__user=self.request.user,
+            )
         return context
 
 
 class PostDetailView(DetailView):
     model = Post
     template_name = "dashboard/post_detail.html"
+    form_class = PostForm
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('dashboard:login')
+        return super(PostDetailView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, *args, **kwargs):
+
+        post = kwargs['object']
+        context = super().get_context_data(**kwargs)
+        context["title"] = post.title
+        context["post"] = post
+        return context
+
+
+class PostCreateView(CreateView):
+    model = Post
+    template_name = "dashboard/post_form.html"
+    fields = ['title', 'content', 'publish', 'category']
+    success_url = "blog:posts"
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = kwargs['object'].title
+        context["title"] = "Novo post"
         return context
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('dashboard:login')
+        return super(PostCreateView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = PostForm(request.POST)
+
+        if form.is_valid():
+            post = form.save(commit=False)
+            blog_user = BlogUser.objects.get(user=request.user)
+            post.author = blog_user
+            post.save()
+            form.save_m2m()
+            return redirect('dashboard:index')
+
+
+class PostUpdateView(UpdateView):
+    model = Post
+    fields = fields = ['title','content','publish', 'category']
+    template_name = "dashboard/post_form.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = f"Editar post: {self.object.title}"
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        post = Post.objects.get(slug=kwargs.get('slug'))
+        form = PostForm(request.POST, instance=post)
+
+        if form.is_valid():
+            post = form.save()
+            return redirect('dashboard:post-detail', post.slug)
 
 
 class CategoryDetailView(DetailView):
     model = Category
     template_name = "dashboard/category_detail.html"
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return redirect('dashboard:login')
+        return super(CategoryDetailView, self).get(request, *args, **kwargs)
+
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = kwargs['object'].name
+        context["categories"] = Category.objects.all()
         context["posts"] = Post.objects.filter(category=kwargs['object'])
         return context
